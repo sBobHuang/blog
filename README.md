@@ -4,4 +4,4 @@ base on python
 
 
 [Python课程设计 搭建博客][1]
-  [1]: https://www.cnblogs.com/BobHuang/p/10139793.html
+  [1]:https://www.cnblogs.com/BobHuang/p/10139793.html
