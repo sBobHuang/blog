@@ -11,11 +11,7 @@ def send_async_email(app, msg,subject,to):
     with app.app_context():
         #调用上下文
         fromaddr = "1161648480@qq.com"
-<<<<<<< HEAD
-        password = "sqientgvtwomjjfi"
-=======
         password = "***"
->>>>>>> 5c0aad78bd3235e8d30598bf77bda717e6b9f9c5
         try:
             s = smtplib.SMTP_SSL()
             s.connect("smtp.qq.com", 465)  # 连接smtp服务器
