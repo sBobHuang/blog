@@ -14,7 +14,7 @@ from flask_login import current_user
 
 @auth.before_app_request
 def before_request():
-    print request.endpoint
+    # print(request.endpoint)
     if current_user.is_authenticated:
         current_user.ping()
         if current_user.is_authenticated \
@@ -55,17 +55,13 @@ def logout():
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
-        print '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++'
         user = User(email=form.email.data,
                     username=form.username.data,
                     password=form.password.data)
         db.session.add(user)
         db.session.commit()
-        print '--------------------------------------------------------------------------------------------------'
         token = user.generate_confirmation_token()
-        print "***************************************************************************************************"
         send_emial(user.email, 'Confirm Your Account', 'auth/email/confirm', user=user, token=token)
-        print '####################################################################################################'
         flash('you can now login!')
         return redirect(url_for('auth.login'))
     return render_template('auth/register.html', form=form)

@@ -1,4 +1,4 @@
-#!/var/app/blog/venv/bin/python
+#!/Users/bob/mg/blog/venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys

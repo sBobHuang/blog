@@ -18,9 +18,10 @@ def send_async_email(app, msg,subject,to):
             s.login(fromaddr, password)  # 登录邮箱
             s.sendmail(fromaddr, to, msg.as_string())  # 发送邮件
             s.quit()
-        except Exception, e:
-            print "Error: unable to send email"
-            print traceback.format_exc()
+        except Exception as e:
+            print("Error: unable to send email")
+            print(traceback.format_exc())
+
 
 def send_emial(to, subject, template, **kwargs):
     app = current_app._get_current_object()

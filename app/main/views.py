@@ -1,21 +1,21 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from flask import  render_template, url_for, redirect, flash, abort, request, make_response
+from flask import render_template, url_for, redirect, flash, abort, request, make_response
 from flask_login import login_required, current_user
-from flask import  current_app
+from flask import current_app
 from . import main
-from .forms import  EditProfileForm, EditProfileAdminForm, PostForm
+from .forms import EditProfileForm, EditProfileAdminForm, PostForm
 from .. import db
 from ..models import User, Role, Permission, Post
 from ..decorators import permission_required
+
 
 @main.route('/', methods=['GET', 'POST'])
 def index():
     form = PostForm()
     show_followed = False
     if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
-        print current_user
         post = Post(body=form.body.data,
                     author=current_user._get_current_object())
         db.session.add(post)
@@ -32,19 +32,22 @@ def index():
     posts = pagination.items
     return render_template('index.html', form=form, posts=posts, pagination=pagination)
 
+
 @main.route('/all')
 @login_required
 def show_all():
     resp = make_response(redirect(url_for('.index')))
-    resp.set_cookie('show_followed', '', max_age=30*24*60*60)
+    resp.set_cookie('show_followed', '', max_age=30 * 24 * 60 * 60)
     return resp
+
 
 @main.route('/followed')
 @login_required
 def show_followed():
     resp = make_response(redirect(url_for('.index')))
-    resp.set_cookie('show_followed', '1', max_age=30*24*60*60)
+    resp.set_cookie('show_followed', '1', max_age=30 * 24 * 60 * 60)
     return resp
+
 
 @main.route('/user/<username>')
 def user(username):
@@ -54,6 +57,7 @@ def user(username):
         abort(404)
     posts = user.posts.order_by(Post.timestamp.desc()).all()
     return render_template('user.html', user=user, posts=posts)
+
 
 @main.route('/edit-profile', methods=['GET', 'POST'])
 @login_required
@@ -73,15 +77,13 @@ def edit_profile():
     return render_template('edit_profile.html', form=form)
 
 
-
-#管理员更改资料的页面
+# 管理员更改资料的页面
 @main.route('/edit-profile/<int:id>', methods=['GET', 'POST'])
 @login_required
 @permission_required(Permission.ADMINISTER)
 def edit_profile_admin(id):
     user = User.query.get_or_404(id)
     if user is None:
-        print"++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
         abort(404)
     form = EditProfileAdminForm(user=user)
     if form.validate_on_submit():
@@ -104,11 +106,13 @@ def edit_profile_admin(id):
     form.about_me.data = user.about_me
     return render_template('edit_profile.html', form=form, user=user)
 
-#单独文章的URL路由
+
+# 单独文章的URL路由
 @main.route('/post/<int:id>')
 def post(id):
     post = Post.query.get_or_404(id)
     return render_template('post.html', posts=[post])
+
 
 @main.route('/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -126,6 +130,7 @@ def edit(id):
     form.body.data = post.body
     return render_template('edit_post.html', form=form)
 
+
 @main.route('/dele/<int:id>', methods=['GET', 'POST'])
 @login_required
 def dele(id):
@@ -134,7 +139,8 @@ def dele(id):
     flash(u'您已删除此留言')
     return redirect(url_for('.index'))
 
-#实现关注功能的路由
+
+# 实现关注功能的路由
 @main.route('/follow/<username>')
 @login_required
 @permission_required(Permission.FOLLOW)
@@ -150,7 +156,8 @@ def follow(username):
     flash(u'你已经关注了XXX ')
     return redirect(url_for('.user', username=username))
 
-#实现取消关注功能
+
+# 实现取消关注功能
 @main.route('/unfollow/<username>')
 @login_required
 @permission_required(Permission.FOLLOW)
@@ -165,6 +172,7 @@ def unfollow(username):
     current_user.unfollow(user)
     flash(u'你已经取消了对该用户的的关注 ')
     return redirect(url_for('.user', username=username))
+
 
 @main.route('/followers/<username>')
 def followers(username):
@@ -190,15 +198,3 @@ def followed_by(username):
     followed = [{'user': item.followed, 'timestamp': item.timestamp} for item in pagination.items]
     return render_template('followers.html', user=user, title="Followed by", endpoint='.followed_by',
                            pagination=pagination, follows=followed)
-
-
-
-
-
-
-
-
-
-
-
-
